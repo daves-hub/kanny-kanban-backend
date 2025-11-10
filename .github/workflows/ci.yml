@@ -39,7 +39,7 @@ jobs:
         run: pnpm prisma:generate
 
       - name: Run tests
-        run: pnpm test -- --runInBand
+        run: pnpm test --runInBand
 
       - name: Build project
         run: pnpm build
