@@ -7,7 +7,7 @@ Checklist for deploying the Kanny Kanban Backend to production.
 ### Environment Setup
 - [ ] Update `.env` with production values:
   - [ ] Set `NODE_ENV=production`
-  - [ ] Generate strong `JWT_SECRET` (use: `openssl rand -base64 32`)
+  - [ ] Generate strong `JWT_SECRET` (use: `openssl rand -base64 128 | tr -d '\n'`)
   - [ ] Set production `DATABASE_URL`
   - [ ] Update `FRONTEND_URL` to production domain
   - [ ] Set appropriate `PORT` (default: 5000)
