@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import prisma from '../lib/prisma';
+import { Prisma } from '@prisma/client';
 import { AppError } from '../middleware/errorHandler';
 
 export const getTasks = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -201,9 +202,18 @@ export const deleteTask = async (req: AuthRequest, res: Response): Promise<void>
       throw new AppError('Task not found', 404);
     }
 
-    await prisma.task.delete({
-      where: { id: taskId },
-    });
+    try {
+      await prisma.task.delete({
+        where: { id: taskId },
+      });
+    } catch (err: any) {
+      // If another request already deleted the task, Prisma throws P2025 (Record to delete does not exist)
+      // Map that to a 404 instead of returning a 500.
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+        throw new AppError('Task not found', 404);
+      }
+      throw err;
+    }
 
     res.json({ message: 'Task deleted successfully' });
   } catch (error) {
